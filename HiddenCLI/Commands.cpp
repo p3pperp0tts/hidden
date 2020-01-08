@@ -4,6 +4,7 @@
 #include "Protect.h"
 #include "Query.h"
 #include "State.h"
+#include "PsOption.h"
 #include <fstream>
 #include <algorithm>
 #include <iostream>
@@ -22,6 +23,7 @@ void LoadCommandsStack(vector<CommandPtr>& stack)
 	stack.push_back(CommandPtr(new CommandUnprotect()));
 	stack.push_back(CommandPtr(new CommandQuery()));
 	stack.push_back(CommandPtr(new CommandState()));
+	stack.push_back(CommandPtr(new CommandPsOption()));
 }
 
 // =================

@@ -544,6 +544,26 @@ HidStatus SendIoctl_SetPsStatePacket(PHidContextInternal context, HidProcId proc
 	return HID_SET_STATUS(TRUE, 0);
 }
 
+HidStatus SendIoctl_SetHangProcessesExit(PHidContextInternal context, BOOLEAN state)
+{
+	Hid_BooleanOption packet;
+	Hid_StatusPacket result;
+	DWORD returned;
+
+	packet.value = state;
+
+	if (!DeviceIoControl(context->hdevice, HID_IOCTL_SET_HANG_PROCESSES_EXIT, &packet, sizeof(packet), &result, sizeof(result), &returned, NULL))
+		return HID_SET_STATUS(FALSE, GetLastError());
+
+	if (returned != sizeof(result))
+		return HID_SET_STATUS(FALSE, ERROR_INVALID_PARAMETER);
+
+	if (!NT_SUCCESS(result.status))
+		return HID_SET_STATUS(FALSE, result.status);
+
+	return HID_SET_STATUS(TRUE, 0);
+}
+
 // Control interface
 
 HidStatus _API Hid_SetState(HidContext context, HidActiveState state)
@@ -742,6 +762,13 @@ HidStatus _API Hid_AttachProtectedState(HidContext context, HidProcId procId, Hi
 HidStatus _API Hid_RemoveProtectedState(HidContext context, HidProcId procId)
 {
 	return SendIoctl_SetPsStatePacket((PHidContextInternal)context, procId, PsProtectedObject, HidActiveState::StateDisabled, HidPsInheritTypes::WithoutInherit);
+}
+
+// Process other interface
+
+HidStatus _API Hid_SetHangProcessesExit(HidContext context, BOOLEAN state)
+{
+	return SendIoctl_SetHangProcessesExit((PHidContextInternal)context, state);
 }
 
 HidStatus _API Hid_NormalizeFilePath(const wchar_t* filePath, wchar_t* normalized, size_t normalizedLen)

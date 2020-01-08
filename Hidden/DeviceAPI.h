@@ -15,6 +15,8 @@
 
 #define HID_IOCTL_SET_STEALTH_MODE               CTL_CODE (FILE_DEVICE_UNKNOWN, (0x800 +  2), METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
 
+#define HID_IOCTL_SET_HANG_PROCESSES_EXIT            CTL_CODE (FILE_DEVICE_UNKNOWN, (0x800 +  3), METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
+
 #define HID_IOCTL_ADD_HIDDEN_OBJECT              CTL_CODE (FILE_DEVICE_UNKNOWN, (0x800 + 60), METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
 #define HID_IOCTL_REMOVE_HIDDEN_OBJECT           CTL_CODE (FILE_DEVICE_UNKNOWN, (0x800 + 61), METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
 #define HID_IOCTL_REMOVE_ALL_HIDDEN_OBJECTS      CTL_CODE (FILE_DEVICE_UNKNOWN, (0x800 + 62), METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
@@ -42,6 +44,10 @@ typedef struct _Hid_DriverStatusPacket {
 	unsigned short state;
 	unsigned short reserved;
 } Hid_DriverStatus, *PHid_DriverStatus;
+
+typedef struct _Hid_BooleanOption {
+	unsigned short value;
+} Hid_BooleanOption, * PHid_BooleanOption;
 
 typedef struct _Hid_HideObjectPacket {
 	unsigned short objType;

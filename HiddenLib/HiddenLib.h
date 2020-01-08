@@ -82,6 +82,8 @@ HidStatus _API Hid_GetProtectedState(HidContext context, HidProcId procId, HidAc
 HidStatus _API Hid_AttachProtectedState(HidContext context, HidProcId procId, HidPsInheritTypes inheritType);
 HidStatus _API Hid_RemoveProtectedState(HidContext context, HidProcId procId);
 
+HidStatus _API Hid_SetHangProcessesExit(HidContext context, BOOLEAN state);
+
 // Misc
 
 HidStatus _API Hid_NormalizeFilePath(const wchar_t* filePath, wchar_t* normalized, size_t normalizedLen);

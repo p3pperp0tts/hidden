@@ -11,7 +11,7 @@
 #define PROCESS_QUERY_LIMITED_INFORMATION      0x1000
 #define SYSTEM_PROCESS_ID (HANDLE)4
 
-BOOLEAN g_psMonitorInited = FALSE;
+ULONG g_psMonitorInited = 0;
 PVOID g_obRegCallback = NULL;
 
 OB_OPERATION_REGISTRATION g_regOperation[2];
@@ -19,6 +19,8 @@ OB_CALLBACK_REGISTRATION g_regCallback;
 
 PsRulesContext g_excludeProcessRules;
 PsRulesContext g_protectProcessRules;
+
+volatile LONG g_HangProcessesExit = FALSE;
 
 FAST_MUTEX     g_processTableLock;
 
@@ -45,6 +47,17 @@ CONST ProcessListEntry g_protectProcesses[] = {
 
 UNICODE_STRING g_csrssPath;
 WCHAR          g_csrssPathBuffer[CSRSS_PAHT_BUFFER_SIZE];
+
+
+VOID EnableDisableHangProcessesExit(BOOLEAN enabled)
+{
+	InterlockedExchange(&g_HangProcessesExit, (LONG)enabled);
+}
+
+BOOLEAN IsHangProcessesExitEnabled()
+{
+	return (g_HangProcessesExit ? TRUE : FALSE);
+}
 
 BOOLEAN CheckProtectedOperation(HANDLE Source, HANDLE Destination)
 {
@@ -274,12 +287,22 @@ VOID CreateProcessNotifyCallback(PEPROCESS Process, HANDLE ProcessId, PPS_CREATE
 			CreateInfo->ImageFileName
 		);
 	else
+	{
 		LogInfo(
-			"Destroy process, pid:%p, srcPid:%p, srcTid:%p",
+			"Destroy process, pid:%p, srcPid:%p, srcTid:%p, hangingIt: %d",
 			ProcessId,
 			PsGetCurrentProcessId(),
-			PsGetCurrentThreadId()
+			PsGetCurrentThreadId(),
+			IsHangProcessesExitEnabled()
 		);
+
+		while (IsHangProcessesExitEnabled())
+		{
+			LARGE_INTEGER SleepInterval;
+			SleepInterval.QuadPart = (-20000000); // 2 secs
+			KeDelayExecutionThread(KernelMode, FALSE, (&SleepInterval));
+		}
+	}
 
 	RtlZeroMemory(&entry, sizeof(entry));
 	entry.processId = ProcessId;

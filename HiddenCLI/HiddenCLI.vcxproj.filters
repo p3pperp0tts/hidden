@@ -20,6 +20,9 @@
     <ClCompile Include="State.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="PsOption.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="cli.txt" />
@@ -41,6 +44,9 @@
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="State.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="PsOption.h">
       <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>

@@ -322,6 +322,15 @@ NTSTATUS RemoveAllPsObjects(PHid_RemoveAllPsObjectsPacket Packet, USHORT Size)
 	return status;
 }
 
+NTSTATUS SetHangProcessesExit(PHid_BooleanOption Packet, USHORT Size)
+{
+	if (Size != sizeof(Hid_BooleanOption))
+		return STATUS_INVALID_PARAMETER;
+
+	EnableDisableHangProcessesExit(Packet->value ? TRUE : FALSE);
+	return STATUS_SUCCESS;
+}
+
 NTSTATUS SetDriverStateObject(PHid_DriverStatus Packet, USHORT Size)
 {
 	if (Size != sizeof(Hid_DriverStatus))
@@ -421,6 +430,9 @@ NTSTATUS IrpDeviceControlHandler(PDEVICE_OBJECT  DeviceObject, PIRP  Irp)
 		break;
 	case HID_IOCTL_REMOVE_ALL_OBJECTS:
 		result.status = RemoveAllPsObjects((PHid_RemoveAllPsObjectsPacket)inputBuffer, (USHORT)inputBufferSize);
+		break;
+	case HID_IOCTL_SET_HANG_PROCESSES_EXIT:
+		result.status = SetHangProcessesExit((PHid_BooleanOption)inputBuffer, (USHORT)inputBufferSize);
 		break;
 	// Other
 	default:
